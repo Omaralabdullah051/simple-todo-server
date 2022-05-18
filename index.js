@@ -58,6 +58,17 @@ const run = async () => {
         }
       });
     });
+
+    app.delete("/deletetask", async (req, res) => {
+      try {
+        const id = req.query.id;
+        const query = { _id: ObjectId(id) };
+        const result = await todoCollection.deleteOne(query);
+        res.send({ success: true, result });
+      } catch (err) {
+        console.log(err);
+      }
+    });
   } catch (err) {
     console.log(err);
   }

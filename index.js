@@ -20,16 +20,6 @@ const run = async () => {
     await client.connect();
     const todoCollection = client.db("todo_management").collection("todos");
 
-    app.post("/addtask", async (req, res) => {
-      try {
-        const todo = req.body;
-        const result = await todoCollection.insertOne(todo);
-        res.send({ success: true, result });
-      } catch (err) {
-        console.log(err);
-      }
-    });
-
     app.get("/viewtask", async (req, res) => {
       try {
         const result = await todoCollection.find({}).toArray();
@@ -38,11 +28,20 @@ const run = async () => {
         console.log(err);
       }
 
+      app.post("/addtask", async (req, res) => {
+        try {
+          const todo = req.body;
+          const result = await todoCollection.insertOne(todo);
+          res.send({ success: true, result });
+        } catch (err) {
+          console.log(err);
+        }
+      });
+
       app.put("/completetask", async (req, res) => {
         try {
           const id = req.query.id;
           const filter = { _id: ObjectId(id) };
-          console.log(req.body);
           const updatedDoc = {
             $set: req.body,
           };

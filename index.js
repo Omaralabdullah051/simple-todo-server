@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ex3wp.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -28,6 +28,35 @@ const run = async () => {
       } catch (err) {
         console.log(err);
       }
+    });
+
+    app.get("/viewtask", async (req, res) => {
+      try {
+        const result = await todoCollection.find({}).toArray();
+        res.send(result);
+      } catch (err) {
+        console.log(err);
+      }
+
+      app.put("/completetask", async (req, res) => {
+        try {
+          const id = req.query.id;
+          const filter = { _id: ObjectId(id) };
+          console.log(req.body);
+          const updatedDoc = {
+            $set: req.body,
+          };
+          const upsert = { upsert: true };
+          const result = await todoCollection.updateOne(
+            filter,
+            updatedDoc,
+            upsert
+          );
+          res.send({ success: true, result });
+        } catch (err) {
+          console.log(err);
+        }
+      });
     });
   } catch (err) {
     console.log(err);
